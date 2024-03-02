@@ -1,0 +1,12 @@
+.logoutNavBtn {
+
+}
+
+.logoutNavBtn:hover {
+    cursor: pointer;
+}
+
+.navbar-nav {
+    justify-content: center;
+    flex: 1;
+}
