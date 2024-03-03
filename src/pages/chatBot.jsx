@@ -73,15 +73,22 @@ const ChatBot = () => {
     const handleSendRec = async () => {
         if (!voiceMessage) return;
 
-        const userMessage = { name: 'User', recording: voiceMessage };
+        const recordedBlob = voiceMessage;
+        const audioBlob = new Blob([recordedBlob], { type: 'audio/mp3' });
+
+        const formData = new FormData();
+        formData.append('recording', audioBlob, 'recording.mp3');
+        console.log([...formData]); // Convert FormData to array for easier visualization in console
+
+        const userMessage = { name: 'User', recording: URL.createObjectURL(audioBlob) };
         setMessages(prev => [userMessage, ...prev]);
 
         fetch(' http://127.0.0.1:5000/predict', {
             method: 'POST',
-            body: JSON.stringify({ recording: voiceMessage }),
+            body: formData,
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data'
             },
         })
             .then((response) => response.json())
