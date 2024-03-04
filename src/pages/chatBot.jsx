@@ -35,6 +35,7 @@ const ChatBot = () => {
         setAllowVoice(false)
         setVoiceMessage(null)
         setStartRecording(false)
+        setElapsedTime(0)
     }
 
     const handleSendMessage = async (e) => {
@@ -50,7 +51,7 @@ const ChatBot = () => {
         const userMessage = { name: 'User', message: input.trim() };
         setMessages(prev => [userMessage, ...prev]);
 
-        fetch(' http://127.0.0.1:5000/predict', {
+        fetch('http://127.0.0.1:5000/predict', {
             method: 'POST',
             body: JSON.stringify({ message: input }),
             mode: 'cors',
@@ -78,12 +79,14 @@ const ChatBot = () => {
 
         const formData = new FormData();
         formData.append('recording', audioBlob, 'recording.mp3');
-        console.log([...formData]); // Convert FormData to array for easier visualization in console
 
-        const userMessage = { name: 'User', recording: URL.createObjectURL(audioBlob) };
+        // console.log("voiceMessage", voiceMessage);
+        // console.log([...formData]);
+
+        const userMessage = { name: 'User', recording: voiceMessage };
         setMessages(prev => [userMessage, ...prev]);
 
-        fetch(' http://127.0.0.1:5000/predict', {
+        fetch('http://127.0.0.1:5000/predict', {
             method: 'POST',
             body: formData,
             mode: 'cors',
@@ -101,10 +104,10 @@ const ChatBot = () => {
             }).finally(() => {
                 handleCancleVoice();
             })
-
     }
 
     const onStop = (recordedBlob) => {
+        console.log("recordedBlob", recordedBlob);
         setVoiceMessage(recordedBlob.blobURL);
     };
 
@@ -156,6 +159,7 @@ const ChatBot = () => {
                             record={startRecording}
                             className='w-25 bg-none d-none'
                             onStop={onStop}
+                            mimeType="audio/mp3"
                         />
 
                         {voiceMessage &&
